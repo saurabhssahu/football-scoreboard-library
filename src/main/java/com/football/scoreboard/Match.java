@@ -51,12 +51,6 @@ public class Match {
 
     @Override
     public String toString() {
-        return "Match{" +
-                "homeTeam='" + homeTeam + '\'' +
-                ", awayTeam='" + awayTeam + '\'' +
-                ", homeScore=" + homeScore +
-                ", awayScore=" + awayScore +
-                ", startTime=" + startTime +
-                '}';
+        return homeTeam + " " + homeScore + " - " + awayTeam + " " + awayScore;
     }
 }
