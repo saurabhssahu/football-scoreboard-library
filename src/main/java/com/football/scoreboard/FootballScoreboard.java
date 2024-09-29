@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.football.scoreboard.ScoreboardUtils.generateMatchKey;
 import static com.football.scoreboard.ScoreboardUtils.validateTeamNames;
 
 public class FootballScoreboard {
@@ -17,21 +18,29 @@ public class FootballScoreboard {
 
     /**
      * Starts a new game with the given home and away teams.
+     *
      * @param homeTeam the name of the home team.
      * @param awayTeam the name of the away team.
+     * @throws ScoreboardException if team names are invalid or a match between these teams is already in progress.
      */
     public void startMatch(String homeTeam, String awayTeam) {
         validateTeamNames(homeTeam, awayTeam);
-        String matchKey = homeTeam + ":" + awayTeam;
+
+        String matchKey = generateMatchKey(homeTeam, awayTeam);
+        if (matches.containsKey(matchKey)) {
+            LOG.error("Football match between {} and {} already in progress.", homeTeam, awayTeam);
+            throw new ScoreboardException("Match already in progress between " + homeTeam + " and " + awayTeam + ".");
+        }
+
         matches.put(matchKey, new Match(homeTeam, awayTeam));
         LOG.info("Started match: {} vs {}", homeTeam, awayTeam);
     }
 
     /**
-     * Retrieves a summary of all ongoing games, ordered by total score.
-     * Games with the same total score are ordered by most recently started.
+     * Retrieves a summary of all ongoing matches, ordered by total score.
+     * Matches with the same total score are ordered by most recently started.
      *
-     * @return Summary of ongoing games
+     * @return Summary of ongoing matches
      */
     public String getSummary() {
         return matches.values().stream()

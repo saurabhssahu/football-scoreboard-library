@@ -34,12 +34,35 @@ class FootballScoreboardTest {
             "India, "
     })
     void testStartMatch_invalidTeamNames(String homeTeam, String awayTeam) {
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+        Exception exception = assertThrows(ScoreboardException.class, () ->
                 footballScoreboard.startMatch(homeTeam, awayTeam));
         if (isBlank(homeTeam)) {
             assertEquals("Home team name must not be null or empty.", exception.getMessage());
         } else {
             assertEquals("Away team name must not be null or empty.", exception.getMessage());
         }
+    }
+
+    @DisplayName("Test startMatch method with duplicate team names")
+    @Test
+    void testStartMatch_duplicateTeamNames() {
+        Exception exception = assertThrows(ScoreboardException.class, () ->
+                footballScoreboard.startMatch("Norway", "norway"));
+        assertEquals("Home and away teams must be different.", exception.getMessage());
+    }
+
+    @DisplayName("Test startMatch method with duplicate matches")
+    @ParameterizedTest
+    @CsvSource({
+            "Norway, Denmark",
+            "Norway, denmark"
+    })
+    void testStartMatch_duplicateMatches(String homeTeam, String awayTeam) {
+
+        footballScoreboard.startMatch("Norway", "Denmark");
+        Exception exception = assertThrows(ScoreboardException.class, () ->
+                footballScoreboard.startMatch(homeTeam, awayTeam));
+        String errorMessage = "Match already in progress between " + homeTeam + " and " + awayTeam + ".";
+        assertEquals(errorMessage, exception.getMessage());
     }
 }
