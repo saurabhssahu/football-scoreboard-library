@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import static com.football.scoreboard.GameConstants.DENMARK;
+import static com.football.scoreboard.GameConstants.NORWAY;
+import static com.football.scoreboard.GameConstants.SWEDEN;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -47,7 +50,7 @@ class FootballScoreboardTest {
     @Test
     void testStartGame_withSameTeams() {
         Exception exception = assertThrows(ScoreboardException.class, () ->
-                footballScoreboard.startGame("Norway", "norway"));
+                footballScoreboard.startGame(NORWAY, "norway"));
         assertEquals("Home and away teams must be different.", exception.getMessage());
     }
 
@@ -58,7 +61,7 @@ class FootballScoreboardTest {
             "Norway, denmark"
     })
     void testStartGame_duplicateGamees(String homeTeam, String awayTeam) {
-        footballScoreboard.startGame("Norway", "Denmark");
+        footballScoreboard.startGame(NORWAY, DENMARK);
         Exception exception = assertThrows(ScoreboardException.class, () ->
                 footballScoreboard.startGame(homeTeam, awayTeam));
         String errorMessage = "Game already in progress between " + homeTeam + " and " + awayTeam + ".";
@@ -68,8 +71,8 @@ class FootballScoreboardTest {
     @DisplayName("Test updateScore method with valid team scores")
     @Test
     void testUpdateScore_successfully() {
-        footballScoreboard.startGame("Norway", "Denmark");
-        footballScoreboard.updateScore("Norway", "Denmark", 3, 2);
+        footballScoreboard.startGame(NORWAY, DENMARK);
+        footballScoreboard.updateScore(NORWAY, DENMARK, 3, 2);
 
         assertEquals("Norway 3 - Denmark 2", footballScoreboard.getSummary());
     }
@@ -81,10 +84,10 @@ class FootballScoreboardTest {
             "4, -5"
     })
     void testUpdateScore_invalidTeamScore(int homeScore, int awayScore) {
-        footballScoreboard.startGame("Norway", "Denmark");
+        footballScoreboard.startGame(NORWAY, DENMARK);
 
         Exception exception = assertThrows(ScoreboardException.class, () ->
-                footballScoreboard.updateScore("Norway", "Denmark", homeScore, awayScore));
+                footballScoreboard.updateScore(NORWAY, DENMARK, homeScore, awayScore));
 
         assertEquals("Scores must not be negative.", exception.getMessage());
     }
@@ -93,7 +96,7 @@ class FootballScoreboardTest {
     @Test
     void testUpdateScore_NonExistentGame() {
         Exception exception = assertThrows(ScoreboardException.class, () -> {
-            footballScoreboard.updateScore("Norway", "Sweden", 1, 0);
+            footballScoreboard.updateScore(NORWAY, SWEDEN, 1, 0);
         });
         assertEquals("Game not found between these teams.", exception.getMessage());
     }

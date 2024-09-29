@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-public class ScoreboardUtils {
+public final class ScoreboardUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(ScoreboardUtils.class);
 
