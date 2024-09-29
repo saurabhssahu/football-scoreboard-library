@@ -33,15 +33,12 @@ public class Match {
         return homeScore;
     }
 
-    public void setHomeScore(int homeScore) {
-        this.homeScore = homeScore;
-    }
-
     public int getAwayScore() {
         return awayScore;
     }
 
-    public void setAwayScore(int awayScore) {
+    public void setScores(int homeScore, int awayScore) {
+        this.homeScore = homeScore;
         this.awayScore = awayScore;
     }
 

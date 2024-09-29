@@ -37,6 +37,24 @@ public class FootballScoreboard {
     }
 
     /**
+     * Updates the score of an ongoing match.
+     *
+     * @param homeTeam  the name of the home team.
+     * @param awayTeam  the name of the away team.
+     * @param homeScore the score of the home team.
+     * @param awayScore the score of the away team.
+     * @throws ScoreboardException if team scores are invalid or a match between these teams is not found.
+     */
+    public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
+
+        String matchKey = generateMatchKey(homeTeam, awayTeam);
+        Match match = matches.get(matchKey);
+
+        match.setScores(homeScore, awayScore);
+        LOG.info("Updated score: {} {} - {} {}", homeTeam, homeScore, awayTeam, awayScore);
+    }
+
+    /**
      * Retrieves a summary of all ongoing matches, ordered by total score.
      * Matches with the same total score are ordered by most recently started.
      *

@@ -21,7 +21,7 @@ class FootballScoreboardTest {
 
     @DisplayName("Test startMatch method with valid team names")
     @Test
-    void testStartMatch_Successfully() {
+    void testStartMatch_successfully() {
         footballScoreboard.startMatch("Mexico", "Canada");
         assertEquals("Mexico 0 - Canada 0", footballScoreboard.getSummary());
     }
@@ -43,9 +43,9 @@ class FootballScoreboardTest {
         }
     }
 
-    @DisplayName("Test startMatch method with duplicate team names")
+    @DisplayName("Test startMatch method with same teams")
     @Test
-    void testStartMatch_duplicateTeamNames() {
+    void testStartMatch_withSameTeams() {
         Exception exception = assertThrows(ScoreboardException.class, () ->
                 footballScoreboard.startMatch("Norway", "norway"));
         assertEquals("Home and away teams must be different.", exception.getMessage());
@@ -58,11 +58,20 @@ class FootballScoreboardTest {
             "Norway, denmark"
     })
     void testStartMatch_duplicateMatches(String homeTeam, String awayTeam) {
-
         footballScoreboard.startMatch("Norway", "Denmark");
         Exception exception = assertThrows(ScoreboardException.class, () ->
                 footballScoreboard.startMatch(homeTeam, awayTeam));
         String errorMessage = "Match already in progress between " + homeTeam + " and " + awayTeam + ".";
         assertEquals(errorMessage, exception.getMessage());
     }
+
+    @DisplayName("Test updateScore method with valid team scores")
+    @Test
+    void testUpdateScore_successfully() {
+        footballScoreboard.startMatch("Norway", "Denmark");
+        footballScoreboard.updateScore("Norway", "Denmark", 3, 2);
+
+        assertEquals("Norway 3 - Denmark 2", footballScoreboard.getSummary());
+    }
+
 }
