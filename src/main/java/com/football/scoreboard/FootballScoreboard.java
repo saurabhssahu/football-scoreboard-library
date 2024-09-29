@@ -8,7 +8,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.football.scoreboard.ScoreboardUtils.generateMatchKey;
+import static com.football.scoreboard.ScoreboardUtils.validateScores;
 import static com.football.scoreboard.ScoreboardUtils.validateTeamNames;
+import static java.util.Objects.isNull;
 
 public class FootballScoreboard {
 
@@ -46,9 +48,15 @@ public class FootballScoreboard {
      * @throws ScoreboardException if team scores are invalid or a match between these teams is not found.
      */
     public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
+        validateScores(homeScore, awayScore);
 
         String matchKey = generateMatchKey(homeTeam, awayTeam);
         Match match = matches.get(matchKey);
+
+        if (isNull(match)) {
+            LOG.error("No match found between {} and {}", homeTeam, awayTeam);
+            throw new ScoreboardException("Match not found between these teams.");
+        }
 
         match.setScores(homeScore, awayScore);
         LOG.info("Updated score: {} {} - {} {}", homeTeam, homeScore, awayTeam, awayScore);

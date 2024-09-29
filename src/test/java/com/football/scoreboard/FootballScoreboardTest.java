@@ -74,4 +74,27 @@ class FootballScoreboardTest {
         assertEquals("Norway 3 - Denmark 2", footballScoreboard.getSummary());
     }
 
+    @DisplayName("Test updateScore method with invalid team scores")
+    @ParameterizedTest
+    @CsvSource({
+            "-2, 3",
+            "4, -5"
+    })
+    void testUpdateScore_invalidTeamScore(int homeScore, int awayScore) {
+        footballScoreboard.startMatch("Norway", "Denmark");
+
+        Exception exception = assertThrows(ScoreboardException.class, () ->
+                footballScoreboard.updateScore("Norway", "Denmark", homeScore, awayScore));
+
+        assertEquals("Scores must not be negative.", exception.getMessage());
+    }
+
+    @DisplayName("Test updateScore method for non existing match")
+    @Test
+    void testUpdateScore_NonExistentMatch() {
+        Exception exception = assertThrows(ScoreboardException.class, () -> {
+            footballScoreboard.updateScore("Norway", "Sweden", 1, 0);
+        });
+        assertEquals("Match not found between these teams.", exception.getMessage());
+    }
 }

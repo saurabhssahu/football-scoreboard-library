@@ -44,4 +44,17 @@ public class ScoreboardUtils {
             throw new ScoreboardException("Home and away teams must be different.");
         }
     }
+
+    /**
+     * Validates scores ensuring they are non-negative.
+     *
+     * @param homeScore the score of the home team.
+     * @param awayScore the score of the away team.
+     */
+    public static void validateScores(int homeScore, int awayScore) {
+        if (homeScore < 0 || awayScore < 0) {
+            LOG.error("Invalid score: Home score {} - Away Score {}", homeScore, awayScore);
+            throw new ScoreboardException("Scores must not be negative.");
+        }
+    }
 }
