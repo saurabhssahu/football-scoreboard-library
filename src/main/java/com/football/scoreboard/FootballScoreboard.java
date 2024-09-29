@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.football.scoreboard.GameConstants.GAME_NOT_FOUND_ERROR;
+import static com.football.scoreboard.GameConstants.GAME_NOT_FOUND_MESSAGE;
 import static com.football.scoreboard.ScoreboardUtils.generateGameKey;
 import static com.football.scoreboard.ScoreboardUtils.validateScores;
 import static com.football.scoreboard.ScoreboardUtils.validateTeamNames;
@@ -54,12 +56,31 @@ public class FootballScoreboard {
         Game game = games.get(gameKey);
 
         if (isNull(game)) {
-            LOG.error("No game found between {} and {}", homeTeam, awayTeam);
-            throw new ScoreboardException("Game not found between these teams.");
+            LOG.error(GAME_NOT_FOUND_ERROR, homeTeam, awayTeam);
+            throw new ScoreboardException(GAME_NOT_FOUND_MESSAGE);
         }
 
         game.setScores(homeScore, awayScore);
         LOG.info("Updated score: {} {} - {} {}", homeTeam, homeScore, awayTeam, awayScore);
+    }
+
+    /**
+     * Finishes an ongoing game and removes it from the scoreboard.
+     *
+     * @param homeTeam the name of the home team.
+     * @param awayTeam the name of the away team.
+     * @throws ScoreboardException if a game between these teams is not found.
+     */
+    public void finishGame(String homeTeam, String awayTeam) {
+        String gameKey = generateGameKey(homeTeam, awayTeam);
+        Game game = games.remove(gameKey);
+
+        if (isNull(game)) {
+            LOG.error(GAME_NOT_FOUND_ERROR, homeTeam, awayTeam);
+            throw new ScoreboardException("Cannot finish a non-existing game.");
+        }
+
+        LOG.info("Finished game: {} vs {}", homeTeam, awayTeam);
     }
 
     /**

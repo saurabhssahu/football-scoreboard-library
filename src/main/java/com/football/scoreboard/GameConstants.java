@@ -9,4 +9,5 @@ public final class GameConstants {
     public static final String NORWAY = "Norway";
     public static final String SWEDEN = "Sweden";
     public static final String GAME_NOT_FOUND_ERROR = "No game found between {} and {}.";
+    public static final String GAME_NOT_FOUND_MESSAGE = "Game not found between these teams.";
 }
