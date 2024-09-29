@@ -18,7 +18,7 @@ public class FootballScoreboard {
 
     private static final Logger LOG = LoggerFactory.getLogger(FootballScoreboard.class);
 
-    private final Map<String, Game> games = new HashMap<>();
+    private final Map<String, Game> scoreboard = new HashMap<>();
 
     /**
      * Starts a new game with the given home and away teams.
@@ -31,12 +31,12 @@ public class FootballScoreboard {
         validateTeamNames(homeTeam, awayTeam);
 
         String gameKey = generateGameKey(homeTeam, awayTeam);
-        if (games.containsKey(gameKey)) {
+        if (scoreboard.containsKey(gameKey)) {
             LOG.error("Football game between {} and {} already in progress.", homeTeam, awayTeam);
             throw new ScoreboardException("Game already in progress between " + homeTeam + " and " + awayTeam + ".");
         }
 
-        games.put(gameKey, new Game(homeTeam, awayTeam));
+        scoreboard.put(gameKey, new Game(homeTeam, awayTeam));
         LOG.info("Started game: {} vs {}", homeTeam, awayTeam);
     }
 
@@ -53,7 +53,7 @@ public class FootballScoreboard {
         validateScores(homeScore, awayScore);
 
         String gameKey = generateGameKey(homeTeam, awayTeam);
-        Game game = games.get(gameKey);
+        Game game = scoreboard.get(gameKey);
 
         if (isNull(game)) {
             LOG.error(GAME_NOT_FOUND_ERROR, homeTeam, awayTeam);
@@ -73,7 +73,7 @@ public class FootballScoreboard {
      */
     public void finishGame(String homeTeam, String awayTeam) {
         String gameKey = generateGameKey(homeTeam, awayTeam);
-        Game game = games.remove(gameKey);
+        Game game = scoreboard.remove(gameKey);
 
         if (isNull(game)) {
             LOG.error(GAME_NOT_FOUND_ERROR, homeTeam, awayTeam);
@@ -85,12 +85,12 @@ public class FootballScoreboard {
 
     /**
      * Retrieves a summary of all ongoing games, ordered by total score.
-     * Gamees with the same total score are ordered by most recently started.
+     * Games with the same total score are ordered by most recently started.
      *
      * @return Summary of ongoing games
      */
     public String getSummary() {
-        return games.values().stream()
+        return scoreboard.values().stream()
                 .sorted()
                 .map(Game::toString)
                 .collect(Collectors.joining("\n"));
