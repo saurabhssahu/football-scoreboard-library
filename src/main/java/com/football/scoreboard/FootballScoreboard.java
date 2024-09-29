@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.football.scoreboard.ScoreboardUtils.generateMatchKey;
+import static com.football.scoreboard.ScoreboardUtils.generateGameKey;
 import static com.football.scoreboard.ScoreboardUtils.validateScores;
 import static com.football.scoreboard.ScoreboardUtils.validateTeamNames;
 import static java.util.Objects.isNull;
@@ -16,62 +16,62 @@ public class FootballScoreboard {
 
     private static final Logger LOG = LoggerFactory.getLogger(FootballScoreboard.class);
 
-    private final Map<String, Match> matches = new HashMap<>();
+    private final Map<String, Game> games = new HashMap<>();
 
     /**
      * Starts a new game with the given home and away teams.
      *
      * @param homeTeam the name of the home team.
      * @param awayTeam the name of the away team.
-     * @throws ScoreboardException if team names are invalid or a match between these teams is already in progress.
+     * @throws ScoreboardException if team names are invalid or a game between these teams is already in progress.
      */
-    public void startMatch(String homeTeam, String awayTeam) {
+    public void startGame(String homeTeam, String awayTeam) {
         validateTeamNames(homeTeam, awayTeam);
 
-        String matchKey = generateMatchKey(homeTeam, awayTeam);
-        if (matches.containsKey(matchKey)) {
-            LOG.error("Football match between {} and {} already in progress.", homeTeam, awayTeam);
-            throw new ScoreboardException("Match already in progress between " + homeTeam + " and " + awayTeam + ".");
+        String gameKey = generateGameKey(homeTeam, awayTeam);
+        if (games.containsKey(gameKey)) {
+            LOG.error("Football game between {} and {} already in progress.", homeTeam, awayTeam);
+            throw new ScoreboardException("Game already in progress between " + homeTeam + " and " + awayTeam + ".");
         }
 
-        matches.put(matchKey, new Match(homeTeam, awayTeam));
-        LOG.info("Started match: {} vs {}", homeTeam, awayTeam);
+        games.put(gameKey, new Game(homeTeam, awayTeam));
+        LOG.info("Started game: {} vs {}", homeTeam, awayTeam);
     }
 
     /**
-     * Updates the score of an ongoing match.
+     * Updates the score of an ongoing game.
      *
      * @param homeTeam  the name of the home team.
      * @param awayTeam  the name of the away team.
      * @param homeScore the score of the home team.
      * @param awayScore the score of the away team.
-     * @throws ScoreboardException if team scores are invalid or a match between these teams is not found.
+     * @throws ScoreboardException if team scores are invalid or a game between these teams is not found.
      */
     public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
         validateScores(homeScore, awayScore);
 
-        String matchKey = generateMatchKey(homeTeam, awayTeam);
-        Match match = matches.get(matchKey);
+        String gameKey = generateGameKey(homeTeam, awayTeam);
+        Game game = games.get(gameKey);
 
-        if (isNull(match)) {
-            LOG.error("No match found between {} and {}", homeTeam, awayTeam);
-            throw new ScoreboardException("Match not found between these teams.");
+        if (isNull(game)) {
+            LOG.error("No game found between {} and {}", homeTeam, awayTeam);
+            throw new ScoreboardException("Game not found between these teams.");
         }
 
-        match.setScores(homeScore, awayScore);
+        game.setScores(homeScore, awayScore);
         LOG.info("Updated score: {} {} - {} {}", homeTeam, homeScore, awayTeam, awayScore);
     }
 
     /**
-     * Retrieves a summary of all ongoing matches, ordered by total score.
-     * Matches with the same total score are ordered by most recently started.
+     * Retrieves a summary of all ongoing games, ordered by total score.
+     * Gamees with the same total score are ordered by most recently started.
      *
-     * @return Summary of ongoing matches
+     * @return Summary of ongoing games
      */
     public String getSummary() {
-        return matches.values().stream()
+        return games.values().stream()
                 .sorted()
-                .map(Match::toString)
+                .map(Game::toString)
                 .collect(Collectors.joining("\n"));
     }
 }

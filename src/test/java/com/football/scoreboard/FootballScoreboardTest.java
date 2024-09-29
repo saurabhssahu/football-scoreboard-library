@@ -19,23 +19,23 @@ class FootballScoreboardTest {
         footballScoreboard = new FootballScoreboard();
     }
 
-    @DisplayName("Test startMatch method with valid team names")
+    @DisplayName("Test startGame method with valid team names")
     @Test
-    void testStartMatch_successfully() {
-        footballScoreboard.startMatch("Mexico", "Canada");
+    void testStartGame_successfully() {
+        footballScoreboard.startGame("Mexico", "Canada");
         assertEquals("Mexico 0 - Canada 0", footballScoreboard.getSummary());
     }
 
-    @DisplayName("Test startMatch method with invalid team names")
+    @DisplayName("Test startGame method with invalid team names")
     @ParameterizedTest
     @CsvSource({
             ", Canada",
             "' ', Mexico",
             "India, "
     })
-    void testStartMatch_invalidTeamNames(String homeTeam, String awayTeam) {
+    void testStartGame_invalidTeamNames(String homeTeam, String awayTeam) {
         Exception exception = assertThrows(ScoreboardException.class, () ->
-                footballScoreboard.startMatch(homeTeam, awayTeam));
+                footballScoreboard.startGame(homeTeam, awayTeam));
         if (isBlank(homeTeam)) {
             assertEquals("Home team name must not be null or empty.", exception.getMessage());
         } else {
@@ -43,32 +43,32 @@ class FootballScoreboardTest {
         }
     }
 
-    @DisplayName("Test startMatch method with same teams")
+    @DisplayName("Test startGame method with same teams")
     @Test
-    void testStartMatch_withSameTeams() {
+    void testStartGame_withSameTeams() {
         Exception exception = assertThrows(ScoreboardException.class, () ->
-                footballScoreboard.startMatch("Norway", "norway"));
+                footballScoreboard.startGame("Norway", "norway"));
         assertEquals("Home and away teams must be different.", exception.getMessage());
     }
 
-    @DisplayName("Test startMatch method with duplicate matches")
+    @DisplayName("Test startGame method with duplicate games")
     @ParameterizedTest
     @CsvSource({
             "Norway, Denmark",
             "Norway, denmark"
     })
-    void testStartMatch_duplicateMatches(String homeTeam, String awayTeam) {
-        footballScoreboard.startMatch("Norway", "Denmark");
+    void testStartGame_duplicateGamees(String homeTeam, String awayTeam) {
+        footballScoreboard.startGame("Norway", "Denmark");
         Exception exception = assertThrows(ScoreboardException.class, () ->
-                footballScoreboard.startMatch(homeTeam, awayTeam));
-        String errorMessage = "Match already in progress between " + homeTeam + " and " + awayTeam + ".";
+                footballScoreboard.startGame(homeTeam, awayTeam));
+        String errorMessage = "Game already in progress between " + homeTeam + " and " + awayTeam + ".";
         assertEquals(errorMessage, exception.getMessage());
     }
 
     @DisplayName("Test updateScore method with valid team scores")
     @Test
     void testUpdateScore_successfully() {
-        footballScoreboard.startMatch("Norway", "Denmark");
+        footballScoreboard.startGame("Norway", "Denmark");
         footballScoreboard.updateScore("Norway", "Denmark", 3, 2);
 
         assertEquals("Norway 3 - Denmark 2", footballScoreboard.getSummary());
@@ -81,7 +81,7 @@ class FootballScoreboardTest {
             "4, -5"
     })
     void testUpdateScore_invalidTeamScore(int homeScore, int awayScore) {
-        footballScoreboard.startMatch("Norway", "Denmark");
+        footballScoreboard.startGame("Norway", "Denmark");
 
         Exception exception = assertThrows(ScoreboardException.class, () ->
                 footballScoreboard.updateScore("Norway", "Denmark", homeScore, awayScore));
@@ -89,12 +89,12 @@ class FootballScoreboardTest {
         assertEquals("Scores must not be negative.", exception.getMessage());
     }
 
-    @DisplayName("Test updateScore method for non existing match")
+    @DisplayName("Test updateScore method for non existing game")
     @Test
-    void testUpdateScore_NonExistentMatch() {
+    void testUpdateScore_NonExistentGame() {
         Exception exception = assertThrows(ScoreboardException.class, () -> {
             footballScoreboard.updateScore("Norway", "Sweden", 1, 0);
         });
-        assertEquals("Match not found between these teams.", exception.getMessage());
+        assertEquals("Game not found between these teams.", exception.getMessage());
     }
 }

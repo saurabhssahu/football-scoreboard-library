@@ -3,9 +3,9 @@ package com.football.scoreboard;
 import java.time.LocalDateTime;
 
 /**
- * Represents a football match between two teams.
+ * Represents a football game between two teams.
  */
-public class Match {
+public class Game {
 
     private final String homeTeam;
     private final String awayTeam;
@@ -13,7 +13,7 @@ public class Match {
     private int awayScore;
     private final LocalDateTime startTime;
 
-    public Match(String homeTeam, String awayTeam) {
+    public Game(String homeTeam, String awayTeam) {
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
         this.homeScore = 0;

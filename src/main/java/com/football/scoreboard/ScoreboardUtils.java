@@ -14,13 +14,13 @@ public class ScoreboardUtils {
     }
 
     /**
-     * Generates a unique key for each match based on team names.
+     * Generates a unique key for each game based on team names.
      *
      * @param homeTeam the name of the home team.
      * @param awayTeam the name of the away team.
-     * @return the match key.
+     * @return the game key.
      */
-    public static String generateMatchKey(String homeTeam, String awayTeam) {
+    public static String generateGameKey(String homeTeam, String awayTeam) {
         return homeTeam.toLowerCase() + ":" + awayTeam.toLowerCase();
     }
 
