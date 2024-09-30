@@ -37,9 +37,13 @@ public class Game {
         return awayScore;
     }
 
-    public void setScores(int homeScore, int awayScore) {
+    public void updateScore(int homeScore, int awayScore) {
         this.homeScore = homeScore;
         this.awayScore = awayScore;
+    }
+
+    public int getTotalScore() {
+        return  homeScore + awayScore;
     }
 
     public LocalDateTime getStartTime() {

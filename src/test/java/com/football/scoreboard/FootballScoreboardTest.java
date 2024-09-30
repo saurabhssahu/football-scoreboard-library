@@ -117,4 +117,52 @@ class FootballScoreboardTest {
                 footballScoreboard.finishGame(NORWAY, SWEDEN));
         assertEquals("Cannot finish a non-existing game.", exception.getMessage());
     }
+
+    @DisplayName("Test getSummary method for multiple games")
+    @Test
+    void testGetSummary_withMultipleGames() {
+        footballScoreboard.startGame("Team A", "Team B");
+        footballScoreboard.updateScore("Team A", "Team B", 2, 1);
+        footballScoreboard.startGame("Team C", "Team D");
+        footballScoreboard.updateScore("Team C", "Team D", 3, 3);
+        footballScoreboard.startGame("Team E", "Team F");
+        footballScoreboard.updateScore("Team E", "Team F", 1, 0);
+
+        String expectedSummary = """
+                Team C 3 - Team D 3
+                Team A 2 - Team B 1
+                Team E 1 - Team F 0
+                """.stripTrailing();
+
+        assertEquals(expectedSummary, footballScoreboard.getSummary());
+    }
+
+    @DisplayName("Test getSummary method for multiple games having same total score")
+    @Test
+    void testGetSummary_withSameTotalScoreGames() {
+        footballScoreboard.startGame("Team A", "Team B");
+        footballScoreboard.updateScore("Team A", "Team B", 2, 1);
+        footballScoreboard.startGame("Team C", "Team D");
+        footballScoreboard.updateScore("Team C", "Team D", 3, 3);
+        footballScoreboard.startGame("Team E", "Team F");
+        footballScoreboard.updateScore("Team E", "Team F", 1, 0);
+        footballScoreboard.startGame("Team G", "Team H");
+        footballScoreboard.updateScore("Team G", "Team H", 2, 4);
+
+        String expectedSummary = """
+                Team G 2 - Team H 4
+                Team C 3 - Team D 3
+                Team A 2 - Team B 1
+                Team E 1 - Team F 0
+                """.stripTrailing();
+
+        assertEquals(expectedSummary, footballScoreboard.getSummary());
+    }
+
+    @DisplayName("Test getSummary method for no ongoing games")
+    @Test
+    void testGetSummary_withNoOngoingGames() {
+        String expectedSummary = footballScoreboard.getSummary();
+        assertTrue(expectedSummary.isEmpty());
+    }
 }

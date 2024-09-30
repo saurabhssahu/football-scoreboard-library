@@ -60,7 +60,7 @@ public class FootballScoreboard {
             throw new ScoreboardException(GAME_NOT_FOUND_MESSAGE);
         }
 
-        game.setScores(homeScore, awayScore);
+        game.updateScore(homeScore, awayScore);
         LOG.info("Updated score: {} {} - {} {}", homeTeam, homeScore, awayTeam, awayScore);
     }
 
@@ -84,15 +84,27 @@ public class FootballScoreboard {
     }
 
     /**
-     * Retrieves a summary of all ongoing games, ordered by total score.
+     * Retrieves a summary of all ongoing games, ordered by total score (homeTeamScore + awayTeamScore).
      * Games with the same total score are ordered by most recently started.
      *
      * @return Summary of ongoing games
      */
     public String getSummary() {
-        return scoreboard.values().stream()
-                .sorted()
+        String summary = scoreboard.values().stream()
+                .sorted((game1, game2) -> {
+                    int scoreComparison = Integer.compare(game2.getTotalScore(), game1.getTotalScore());
+                    return scoreComparison != 0 ? scoreComparison :
+                            game2.getStartTime().compareTo(game1.getStartTime());
+                })
                 .map(Game::toString)
                 .collect(Collectors.joining("\n"));
+
+        if (summary.isEmpty()) {
+            LOG.info("No games in progress.");
+        } else {
+            LOG.info("Summary of ongoing games:\n{}", summary);
+        }
+
+        return summary;
     }
 }
