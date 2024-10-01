@@ -55,7 +55,7 @@ public class FootballScoreboard {
         Game game = scoreboard.get(gameKey);
 
         if (isNull(game)) {
-            LOG.error(GAME_NOT_FOUND_ERROR, homeTeam, awayTeam);
+            LOG.warn(GAME_NOT_FOUND_ERROR, homeTeam, awayTeam);
             throw new ScoreboardException(GAME_NOT_FOUND_MESSAGE);
         }
 
@@ -75,7 +75,7 @@ public class FootballScoreboard {
         Game game = scoreboard.remove(gameKey);
 
         if (isNull(game)) {
-            LOG.error(GAME_NOT_FOUND_ERROR, homeTeam, awayTeam);
+            LOG.warn(GAME_NOT_FOUND_ERROR, homeTeam, awayTeam);
             throw new ScoreboardException("Cannot finish a non-existing game.");
         }
 
@@ -117,19 +117,19 @@ public class FootballScoreboard {
     private void checkTeamParticipation(String homeTeam, String awayTeam) {
         for (Game game : scoreboard.values()) {
             if (equalsIgnoreCase(game.getHomeTeam(), homeTeam)) {
-                LOG.error(TEAM_ALREADY_PLAYING_MESSAGE, homeTeam, game.getAwayTeam());
+                LOG.warn(TEAM_ALREADY_PLAYING_MESSAGE, homeTeam, game.getAwayTeam());
                 throw new ScoreboardException("Team " + homeTeam + " is already playing against " + game.getAwayTeam());
             }
             if (equalsIgnoreCase(game.getAwayTeam(), homeTeam)) {
-                LOG.error(TEAM_ALREADY_PLAYING_MESSAGE, homeTeam, game.getHomeTeam());
+                LOG.warn(TEAM_ALREADY_PLAYING_MESSAGE, homeTeam, game.getHomeTeam());
                 throw new ScoreboardException("Team " + homeTeam + " is already playing against " + game.getHomeTeam());
             }
             if (equalsIgnoreCase(game.getHomeTeam(), awayTeam)) {
-                LOG.error(TEAM_ALREADY_PLAYING_MESSAGE, awayTeam, game.getAwayTeam());
+                LOG.warn(TEAM_ALREADY_PLAYING_MESSAGE, awayTeam, game.getAwayTeam());
                 throw new ScoreboardException("Team " + awayTeam + " is already playing against " + game.getAwayTeam());
             }
             if (equalsIgnoreCase(game.getAwayTeam(), awayTeam)) {
-                LOG.error(TEAM_ALREADY_PLAYING_MESSAGE, awayTeam, game.getHomeTeam());
+                LOG.warn(TEAM_ALREADY_PLAYING_MESSAGE, awayTeam, game.getHomeTeam());
                 throw new ScoreboardException("Team " + awayTeam + " is already playing against " + game.getHomeTeam());
             }
         }
