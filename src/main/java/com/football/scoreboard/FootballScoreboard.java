@@ -9,10 +9,12 @@ import java.util.stream.Collectors;
 
 import static com.football.scoreboard.GameConstants.GAME_NOT_FOUND_ERROR;
 import static com.football.scoreboard.GameConstants.GAME_NOT_FOUND_MESSAGE;
+import static com.football.scoreboard.GameConstants.TEAM_ALREADY_PLAYING_MESSAGE;
 import static com.football.scoreboard.ScoreboardUtils.generateGameKey;
 import static com.football.scoreboard.ScoreboardUtils.validateScores;
 import static com.football.scoreboard.ScoreboardUtils.validateTeamNames;
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 
 public class FootballScoreboard {
 
@@ -29,12 +31,9 @@ public class FootballScoreboard {
      */
     public void startGame(String homeTeam, String awayTeam) {
         validateTeamNames(homeTeam, awayTeam);
+        checkTeamParticipation(homeTeam, awayTeam);
 
         String gameKey = generateGameKey(homeTeam, awayTeam);
-        if (scoreboard.containsKey(gameKey)) {
-            LOG.error("Football game between {} and {} already in progress.", homeTeam, awayTeam);
-            throw new ScoreboardException("Game already in progress between " + homeTeam + " and " + awayTeam + ".");
-        }
 
         scoreboard.put(gameKey, new Game(homeTeam, awayTeam));
         LOG.info("Started game: {} vs {}", homeTeam, awayTeam);
@@ -106,5 +105,33 @@ public class FootballScoreboard {
         }
 
         return summary;
+    }
+
+    /**
+     * Checks if either team is already playing in any ongoing game.
+     *
+     * @param homeTeam the name of the home team.
+     * @param awayTeam the name of the away team.
+     *  @throws ScoreboardException if either team is already playing in any ongoing game.
+     */
+    private void checkTeamParticipation(String homeTeam, String awayTeam) {
+        for (Game game : scoreboard.values()) {
+            if (equalsIgnoreCase(game.getHomeTeam(), homeTeam)) {
+                LOG.error(TEAM_ALREADY_PLAYING_MESSAGE, homeTeam, game.getAwayTeam());
+                throw new ScoreboardException("Team " + homeTeam + " is already playing against " + game.getAwayTeam());
+            }
+            if (equalsIgnoreCase(game.getAwayTeam(), homeTeam)) {
+                LOG.error(TEAM_ALREADY_PLAYING_MESSAGE, homeTeam, game.getHomeTeam());
+                throw new ScoreboardException("Team " + homeTeam + " is already playing against " + game.getHomeTeam());
+            }
+            if (equalsIgnoreCase(game.getHomeTeam(), awayTeam)) {
+                LOG.error(TEAM_ALREADY_PLAYING_MESSAGE, awayTeam, game.getAwayTeam());
+                throw new ScoreboardException("Team " + awayTeam + " is already playing against " + game.getAwayTeam());
+            }
+            if (equalsIgnoreCase(game.getAwayTeam(), awayTeam)) {
+                LOG.error(TEAM_ALREADY_PLAYING_MESSAGE, awayTeam, game.getHomeTeam());
+                throw new ScoreboardException("Team " + awayTeam + " is already playing against " + game.getHomeTeam());
+            }
+        }
     }
 }

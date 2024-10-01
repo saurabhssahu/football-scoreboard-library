@@ -39,7 +39,7 @@ class FootballScoreboardTest {
             "India, "
     })
     void testStartGame_invalidTeamNames(String homeTeam, String awayTeam) {
-        Exception exception = assertThrows(ScoreboardException.class, () ->
+        ScoreboardException exception = assertThrows(ScoreboardException.class, () ->
                 footballScoreboard.startGame(homeTeam, awayTeam));
         if (isBlank(homeTeam)) {
             assertEquals("Home team name must not be null or empty.", exception.getMessage());
@@ -51,7 +51,7 @@ class FootballScoreboardTest {
     @DisplayName("Test startGame method with same teams")
     @Test
     void testStartGame_withSameTeams() {
-        Exception exception = assertThrows(ScoreboardException.class, () ->
+        ScoreboardException exception = assertThrows(ScoreboardException.class, () ->
                 footballScoreboard.startGame(NORWAY, "norway"));
         assertEquals("Home and away teams must be different.", exception.getMessage());
     }
@@ -64,10 +64,42 @@ class FootballScoreboardTest {
     })
     void testStartGame_duplicateGames(String homeTeam, String awayTeam) {
         footballScoreboard.startGame(NORWAY, DENMARK);
-        Exception exception = assertThrows(ScoreboardException.class, () ->
+        ScoreboardException exception = assertThrows(ScoreboardException.class, () ->
                 footballScoreboard.startGame(homeTeam, awayTeam));
-        String errorMessage = "Game already in progress between " + homeTeam + " and " + awayTeam + ".";
-        assertEquals(errorMessage, exception.getMessage());
+        assertEquals("Team Norway is already playing against Denmark", exception.getMessage());
+    }
+
+    @DisplayName("Test startGame method with home team already involved in another game as a away team")
+    @Test
+    void testStartGame_withHomeTeamInvolved() {
+        footballScoreboard.startGame(NORWAY, SWEDEN);
+
+        ScoreboardException exception = assertThrows(ScoreboardException.class, () -> {
+            footballScoreboard.startGame(SWEDEN, DENMARK);
+        });
+        assertEquals("Team Sweden is already playing against Norway", exception.getMessage());
+    }
+
+    @DisplayName("Test startGame method with away team already involved in another game as a home team")
+    @Test
+    void testStartGame_withAwayTeamInvolved() {
+        footballScoreboard.startGame(NORWAY, DENMARK);
+
+        ScoreboardException exception = assertThrows(ScoreboardException.class, () -> {
+            footballScoreboard.startGame(SWEDEN, NORWAY);
+        });
+        assertEquals("Team Norway is already playing against Denmark", exception.getMessage());
+    }
+
+    @DisplayName("Test startGame method with away team already involved in another game as a away team")
+    @Test
+    void testStartGame_withAwayTeamInvolvedInAnotherGame() {
+        footballScoreboard.startGame(NORWAY, DENMARK);
+
+        ScoreboardException exception = assertThrows(ScoreboardException.class, () -> {
+            footballScoreboard.startGame(SWEDEN, DENMARK);
+        });
+        assertEquals("Team Denmark is already playing against Norway", exception.getMessage());
     }
 
     @DisplayName("Test updateScore method with valid team scores")
@@ -88,7 +120,7 @@ class FootballScoreboardTest {
     void testUpdateScore_invalidTeamScore(int homeScore, int awayScore) {
         footballScoreboard.startGame(NORWAY, DENMARK);
 
-        Exception exception = assertThrows(ScoreboardException.class, () ->
+        ScoreboardException exception = assertThrows(ScoreboardException.class, () ->
                 footballScoreboard.updateScore(NORWAY, DENMARK, homeScore, awayScore));
 
         assertEquals("Scores must not be negative.", exception.getMessage());
@@ -97,7 +129,7 @@ class FootballScoreboardTest {
     @DisplayName("Test updateScore method for non existing game")
     @Test
     void testUpdateScore_nonExistentGame() {
-        Exception exception = assertThrows(ScoreboardException.class, () ->
+        ScoreboardException exception = assertThrows(ScoreboardException.class, () ->
                 footballScoreboard.updateScore(NORWAY, SWEDEN, 1, 0));
         assertEquals(GAME_NOT_FOUND_MESSAGE, exception.getMessage());
     }
@@ -113,7 +145,7 @@ class FootballScoreboardTest {
     @DisplayName("Test finishGame method for non existing game")
     @Test
     void testFinishGame_nonExistentGame() {
-        Exception exception = assertThrows(ScoreboardException.class, () ->
+        ScoreboardException exception = assertThrows(ScoreboardException.class, () ->
                 footballScoreboard.finishGame(NORWAY, SWEDEN));
         assertEquals("Cannot finish a non-existing game.", exception.getMessage());
     }
